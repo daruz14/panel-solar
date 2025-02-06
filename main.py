@@ -7,31 +7,50 @@ class Rectangle:
         return self.width * self.height
 
 
-def get_count_of_small_rectangles_in_big_rectangle(big_rectangle: Rectangle, small_rectangle: Rectangle) -> int:
-    width = big_rectangle.width // small_rectangle.width
-    height = big_rectangle.height // small_rectangle.height
-    return width * height
+def count_fit_panels(roof: Rectangle, panel: Rectangle) -> int:
+    return (roof.width // panel.width) * (roof.height // panel.height)
 
 
-def get_max_count_of_small_rectangles_in_big_rectangle(panel_width: int, panel_height: int, roof_width: int, roof_height: int) -> int:
+def maximize_panel_placement(roof: Rectangle, panel: Rectangle) -> int:
+    if roof.width < panel.width or roof.height < panel.height:
+        return 0
+
+    rotated_panel = Rectangle(panel.height, panel.width)
+    max_count = count_fit_panels(roof, panel)
+
+    used_width = (roof.width // panel.width) * panel.width
+    used_height = (roof.height // panel.height) * panel.height
+
+    if used_height == roof.height and used_width == roof.width:
+        return max_count
+
+    remaining_width = roof.width - used_width
+    remaining_height = roof.height - used_height
+    remaining_sections = []
+
+    if remaining_width > 0:
+        remaining_sections.append(Rectangle(remaining_width, roof.height))
+
+    if remaining_height > 0:
+        remaining_sections.append(Rectangle(roof.width, remaining_height))
+
+    max_count += sum(count_fit_panels(section, rotated_panel)
+                     for section in remaining_sections)
+
+    return max_count
+
+
+def max_panels_in_roof(panel_width: int, panel_height: int, roof_width: int, roof_height: int) -> int:
     roof_rectangle = Rectangle(roof_width, roof_height)
     panel_rectangle = Rectangle(panel_width, panel_height)
-    panel_rectangle_rotate = Rectangle(panel_height, panel_width)
-    count = get_count_of_small_rectangles_in_big_rectangle(
-        roof_rectangle, panel_rectangle)
-    count_rotate = get_count_of_small_rectangles_in_big_rectangle(
-        roof_rectangle, panel_rectangle_rotate)
-
-    max_count = max(count, count_rotate)
-    print(f'Cantidad de rectángulos horizontales: {count}')
-    print(f'Cantidad de rectángulos verticales: {count_rotate}')
-    print(f'Máxima cantidad de rectángulos: {max_count}')
+    max_combination = maximize_panel_placement(roof_rectangle, panel_rectangle)
+    print(f'Máxima combinación: {max_combination}\n')
 
 
 def main():
-    get_max_count_of_small_rectangles_in_big_rectangle(1, 2, 2, 4)
-    get_max_count_of_small_rectangles_in_big_rectangle(1, 2, 3, 5)
-    get_max_count_of_small_rectangles_in_big_rectangle(2, 2, 1, 10)
+    max_panels_in_roof(1, 2, 2, 4)
+    max_panels_in_roof(1, 2, 3, 5)
+    max_panels_in_roof(2, 2, 1, 10)
 
 
 if __name__ == "__main__":
