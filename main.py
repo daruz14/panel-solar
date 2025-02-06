@@ -12,6 +12,17 @@ class Rectangle:
         )
 
 
+class TriangleIsosceles:
+    def __init__(self, base: int, height: int) -> None:
+        self.base = base
+        self.height = height
+
+    def get_largest_inscribed_rectangle(self) -> Rectangle:
+        rect_width = self.base / 2
+        rect_height = self.height / 2
+        return Rectangle(int(rect_width), int(rect_height))
+
+
 def count_fit_panels(roof: Rectangle, panel: Rectangle) -> int:
     return (roof.width // panel.width) * (roof.height // panel.height)
 
@@ -55,11 +66,19 @@ def maximize_panel_placement(roof: Rectangle, panel: Rectangle) -> int:
     return max(max_count, max_original, max_rotated)
 
 
-def max_panels_in_roof(panel_width: int, panel_height: int, roof_width: int, roof_height: int) -> int:
+def max_panels_in_roof(panel_width: int, panel_height: int, roof_width: int, roof_height: int) -> None:
     roof_rectangle = Rectangle(roof_width, roof_height)
     panel_rectangle = Rectangle(panel_width, panel_height)
     max_combination = maximize_panel_placement(roof_rectangle, panel_rectangle)
     print(f'Máxima combinación: {max_combination}\n')
+
+
+def max_panels_in_triangle(base_triangle: int, height_triangle: int, panel_width: int, panel_height: int) -> None:
+    triangle = TriangleIsosceles(base_triangle, height_triangle)
+    largest_rectangle = triangle.get_largest_inscribed_rectangle()
+    print(f'Máxima combinación en el triángulo:')
+    max_panels_in_roof(panel_width, panel_height,
+                       largest_rectangle.width, largest_rectangle.height)
 
 
 def main():
@@ -69,6 +88,9 @@ def main():
     max_panels_in_roof(2, 3, 5, 5)
     max_panels_in_roof(3, 3, 2, 2)
     max_panels_in_roof(2, 3, 3, 4)
+
+    max_panels_in_triangle(10, 6, 2, 2)
+    max_panels_in_triangle(10, 10, 2, 3)
 
 
 if __name__ == "__main__":
